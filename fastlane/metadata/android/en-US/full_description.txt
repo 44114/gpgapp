@@ -1,0 +1,21 @@
+GPG Key Manager is a complete OpenPGP / GPG toolkit for Android, designed for everyone who cares about privacy and secure communication. Everything runs entirely on your device — no accounts, no servers, no internet connection required.
+
+EASY KEY MANAGEMENT
+Create strong PGP key pairs in seconds. Choose the modern Ed25519 (sign) + X25519 (encrypt) combination for fast, short and secure keys, or stick with classic RSA keys up to 4096 bits for maximum compatibility. Manage all your keys in one place: list, view, import and export ASCII-armored public and private keys.
+
+ENCRYPT AND DECRYPT MESSAGES
+Encrypt any text with a recipient's public key and only they — using their private key — can read it. Decrypt incoming messages with your own private key, protected by your passphrase. Text encryption uses AES-256 with a fresh session key, and each message carries an integrity check.
+
+SIGN AND VERIFY
+Prove authorship and protect against tampering by signing text with your private key. Verify signatures with the corresponding public key to confirm that a message really came from its sender.
+
+FULLY OFFLINE AND PRIVATE
+All cryptographic operations are performed locally using the open-source Bouncy Castle library. Your private keys are stored encrypted at rest with AES-256 inside the app's private storage, and your passphrase is never saved. The app requests no permissions and makes no network calls — your secrets never leave your phone.
+
+BEAUTIFUL AND ACCESSIBLE
+A modern Material 3 interface with light and dark themes and Android 12+ Dynamic Color support. Text fields, dialogs and every action are designed to be simple and intuitive, and the whole app is available in English, Simplified Chinese, Traditional Chinese, Japanese, Korean, French, German, Spanish, Portuguese, Italian, Russian, Dutch, Polish, Turkish, Arabic, Hindi, Indonesian, Vietnamese and Thai.
+
+F-DROID FRIENDLY
+The app is built to meet F-Droid's strict reproducibility guidelines, so you can install and build it from source with confidence.
+
+Requirements: Android 8.0 (API 26) or higher.

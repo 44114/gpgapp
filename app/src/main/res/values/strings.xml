@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">GPG Key Manager</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="action_import">Import</string>
+    <string name="export">Export</string>
+    <string name="passphrase">Passphrase</string>
+    <string name="confirm_passphrase">Confirm Passphrase</string>
+    <string name="plain_text">Plain Text</string>
+    <string name="private_key">Private Key</string>
+    <string name="public_key">Public Key</string>
+    <string name="key_private">Private</string>
+    <string name="public_keys">Public Keys</string>
+    <string name="private_keys">Private Keys</string>
+    <string name="toggle">Toggle</string>
+    <string name="hide">Hide</string>
+    <string name="show">Show</string>
+    <string name="key_type_format">%1$s %2$d-bit</string>
+    <string name="bit_size">%1$d-bit</string>
+    <string name="encrypted_ascii_armored">Encrypted (ASCII Armored)</string>
+    <string name="unknown">Unknown</string>
+
+    <!-- Home -->
+    <string name="home_subtitle">Secure your communications with PGP encryption</string>
+    <string name="home_quick_actions">Quick Actions</string>
+    <string name="home_action_generate_key">Generate Key</string>
+    <string name="home_action_generate_key_subtitle">Create new PGP key pair</string>
+    <string name="home_action_my_keys">My Keys</string>
+    <string name="home_action_my_keys_subtitle">View and manage keys</string>
+    <string name="home_action_encrypt_subtitle">Encrypt text with public key</string>
+    <string name="home_action_decrypt_subtitle">Decrypt text with private key</string>
+    <string name="action_encrypt">Encrypt</string>
+    <string name="action_decrypt">Decrypt</string>
+
+    <!-- Key List -->
+    <string name="key_management">Key Management</string>
+    <string name="import_key">Import Key</string>
+    <string name="no_keys_found">No Keys Found</string>
+    <string name="no_keys_found_subtitle">Generate or import a PGP key to get started</string>
+    <string name="private_keys_count">Private Keys (%1$d)</string>
+    <string name="public_keys_count">Public Keys (%1$d)</string>
+    <string name="import_pgp_key">Import PGP Key</string>
+    <string name="import_key_instructions">Paste the ASCII-armored PGP key below:</string>
+    <string name="armored_key">Armored Key</string>
+    <string name="delete_key">Delete Key</string>
+    <string name="delete_key_confirmation">Are you sure you want to delete the key for \"%1$s\"? This action cannot be undone.</string>
+
+    <!-- Key Detail -->
+    <string name="key_details">Key Details</string>
+    <string name="key_id">Key ID</string>
+    <string name="type">Type</string>
+    <string name="created">Created</string>
+    <string name="fingerprint">Fingerprint</string>
+    <string name="private_key_armored">Private Key (Armored)</string>
+    <string name="public_key_armored">Public Key (Armored)</string>
+    <string name="export_key">Export Key</string>
+    <string name="refresh_export">Refresh Export</string>
+
+    <!-- Generate Key -->
+    <string name="generate_key_pair">Generate Key Pair</string>
+    <string name="key_information">Key Information</string>
+    <string name="key_information_description">A PGP key pair consists of a public key (shared with others) and a private key (kept secret). Ed25519 is the modern default: fast, short and strong. RSA 4096-bit is the traditional choice for maximum compatibility.</string>
+    <string name="user_id">User ID</string>
+    <string name="user_id_placeholder">Alice &lt;alice@example.com&gt;</string>
+    <string name="key_algorithm">Key Algorithm</string>
+    <string name="key_strength">Key Strength</string>
+    <string name="ed25519_info">Ed25519 (sign) + X25519 (encrypt), fixed 256-bit security</string>
+
+    <!-- Encrypt -->
+    <string name="encrypt_message">Encrypt Message</string>
+    <string name="select_public_key">Select Public Key</string>
+    <string name="select_a_public_key">Select a public key</string>
+    <string name="message_to_encrypt">Message to Encrypt</string>
+    <string name="encrypted_result">Encrypted Result</string>
+
+    <!-- Decrypt -->
+    <string name="decrypt_message">Decrypt Message</string>
+    <string name="select_private_key">Select Private Key</string>
+    <string name="select_a_private_key">Select a private key</string>
+    <string name="encrypted_message">Encrypted Message</string>
+    <string name="decrypted_result">Decrypted Result</string>
+
+    <!-- Success messages -->
+    <string name="key_generated_success">Key generated successfully</string>
+    <string name="key_deleted">Key deleted</string>
+    <string name="key_imported_success">Key imported successfully</string>
+    <string name="public_key_exported">Public key exported</string>
+    <string name="private_key_exported">Private key exported</string>
+    <string name="encrypted_success">Encrypted successfully</string>
+    <string name="text_encrypted_success">Text encrypted successfully</string>
+    <string name="decrypted_success">Decrypted successfully</string>
+    <string name="text_decrypted_success">Text decrypted successfully</string>
+    <string name="signed_success">Signed successfully</string>
+    <string name="data_signed_success">Data signed successfully</string>
+
+    <!-- Error messages -->
+    <string name="error_user_id_required">User ID is required</string>
+    <string name="error_passphrase_required">Passphrase is required</string>
+    <string name="error_passphrases_mismatch">Passphrases do not match</string>
+    <string name="error_input_text_required">Input text is required</string>
+    <string name="error_select_public_key">Please select a public key</string>
+    <string name="error_select_private_key">Please select a private key</string>
+    <string name="error_failed_load_keys">Failed to load keys</string>
+    <string name="error_failed_generate_key">Failed to generate key</string>
+    <string name="error_failed_delete_key">Failed to delete key</string>
+    <string name="error_failed_export_key">Failed to export key</string>
+    <string name="error_failed_import_key">Failed to import key</string>
+    <string name="error_encryption_failed">Encryption failed</string>
+    <string name="error_decryption_failed">Decryption failed</string>
+    <string name="error_signing_failed">Signing failed</string>
+</resources>
