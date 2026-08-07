@@ -1,0 +1,9 @@
+Initial release of GPG Key Manager.
+
+- Create modern Ed25519 + X25519 or classic RSA (up to 4096-bit) key pairs
+- Encrypt and decrypt text with OpenPGP keys
+- Sign messages and verify signatures
+- Import and export ASCII-armored public and private keys
+- Fully offline: all operations run locally with Bouncy Castle, no permissions, no network
+- Material 3 design with light/dark themes and Android 12+ Dynamic Color
+- Available in 19 languages
