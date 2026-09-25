@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">암호화에 실패했습니다</string>
     <string name="error_decryption_failed">복호화에 실패했습니다</string>
     <string name="error_signing_failed">서명에 실패했습니다</string>
+
+    <!-- Sign -->
+    <string name="action_sign">서명</string>
+    <string name="sign_message">메시지 서명</string>
+    <string name="message_to_sign">서명할 메시지</string>
+    <string name="signed_result">서명된 메시지</string>
+    <string name="signed_ascii_armored">서명됨 (ASCII Armor)</string>
+    <string name="home_action_sign_subtitle">개인 키로 텍스트에 서명합니다</string>
+
+    <!-- Verify -->
+    <string name="action_verify">검증</string>
+    <string name="verify_signature">서명 검증</string>
+    <string name="message_to_verify">검증할 서명된 메시지</string>
+    <string name="signature_valid">서명이 유효합니다</string>
+    <string name="signature_invalid">서명이 유효하지 않습니다</string>
+    <string name="home_action_verify_subtitle">서명된 메시지를 확인합니다</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">검증 실패</string>
+    <string name="error_integrity_check_failed">무결성 검사 실패: 메시지가 변조되었거나 손상되었습니다</string>
+
 </resources>

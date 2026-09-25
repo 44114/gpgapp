@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Şifreleme başarısız</string>
     <string name="error_decryption_failed">Şifre çözme başarısız</string>
     <string name="error_signing_failed">İmzalama başarısız</string>
+
+    <!-- Sign -->
+    <string name="action_sign">İmzala</string>
+    <string name="sign_message">Mesajı imzala</string>
+    <string name="message_to_sign">İmzalanacak mesaj</string>
+    <string name="signed_result">İmzalanmış mesaj</string>
+    <string name="signed_ascii_armored">İmzalanmış (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Metni özel anahtarınızla imzalayın</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Doğrula</string>
+    <string name="verify_signature">İmzayı doğrula</string>
+    <string name="message_to_verify">Doğrulanacak imzalı mesaj</string>
+    <string name="signature_valid">İmza geçerli</string>
+    <string name="signature_invalid">İmza geçerli DEĞİL</string>
+    <string name="home_action_verify_subtitle">İmzalı bir mesajı doğrulayın</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Doğrulama başarısız</string>
+    <string name="error_integrity_check_failed">Bütünlük denetimi başarısız: mesaj değiştirilmiş veya bozulmuş</string>
+
 </resources>

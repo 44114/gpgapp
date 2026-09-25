@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Enkripsi gagal</string>
     <string name="error_decryption_failed">Dekripsi gagal</string>
     <string name="error_signing_failed">Penandatanganan gagal</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Tanda tangani</string>
+    <string name="sign_message">Tanda tangani pesan</string>
+    <string name="message_to_sign">Pesan untuk ditandatangani</string>
+    <string name="signed_result">Pesan tertanda tangan</string>
+    <string name="signed_ascii_armored">Tertanda tangan (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Tanda tangani teks dengan kunci privat Anda</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Verifikasi</string>
+    <string name="verify_signature">Verifikasi tanda tangan</string>
+    <string name="message_to_verify">Pesan tertanda tangan untuk diverifikasi</string>
+    <string name="signature_valid">Tanda tangan valid</string>
+    <string name="signature_invalid">Tanda tangan TIDAK valid</string>
+    <string name="home_action_verify_subtitle">Periksa pesan yang ditandatangani</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Verifikasi gagal</string>
+    <string name="error_integrity_check_failed">Pemeriksaan integritas gagal: pesan telah diubah atau rusak</string>
+
 </resources>

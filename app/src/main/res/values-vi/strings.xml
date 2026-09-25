@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Mã hóa thất bại</string>
     <string name="error_decryption_failed">Giải mã thất bại</string>
     <string name="error_signing_failed">Ký thất bại</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Ký</string>
+    <string name="sign_message">Ký tin nhắn</string>
+    <string name="message_to_sign">Tin nhắn cần ký</string>
+    <string name="signed_result">Tin nhắn đã ký</string>
+    <string name="signed_ascii_armored">Đã ký (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Ký văn bản bằng khóa riêng của bạn</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Xác minh</string>
+    <string name="verify_signature">Xác minh chữ ký</string>
+    <string name="message_to_verify">Tin nhắn đã ký cần xác minh</string>
+    <string name="signature_valid">Chữ ký hợp lệ</string>
+    <string name="signature_invalid">Chữ ký KHÔNG hợp lệ</string>
+    <string name="home_action_verify_subtitle">Kiểm tra tin nhắn đã ký</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Xác minh thất bại</string>
+    <string name="error_integrity_check_failed">Kiểm tra toàn vẹn thất bại: tin nhắn đã bị sửa đổi hoặc hỏng</string>
+
 </resources>

@@ -113,4 +113,25 @@
     <string name="error_encryption_failed">Encryption failed</string>
     <string name="error_decryption_failed">Decryption failed</string>
     <string name="error_signing_failed">Signing failed</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Sign</string>
+    <string name="sign_message">Sign Message</string>
+    <string name="message_to_sign">Message to Sign</string>
+    <string name="signed_result">Signed Message</string>
+    <string name="signed_ascii_armored">Signed (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Sign text with your private key</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Verify</string>
+    <string name="verify_signature">Verify Signature</string>
+    <string name="message_to_verify">Signed Message to Verify</string>
+    <string name="signature_valid">Signature is valid</string>
+    <string name="signature_invalid">Signature is NOT valid</string>
+    <string name="home_action_verify_subtitle">Check a signed message</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Verification failed</string>
+    <string name="error_integrity_check_failed">Integrity check failed: the message was modified or corrupted</string>
+
 </resources>

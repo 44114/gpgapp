@@ -1,11 +1,9 @@
 package com.gpgapp
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -30,6 +28,8 @@ import com.gpgapp.ui.screens.GenerateKeyScreen
 import com.gpgapp.ui.screens.HomeScreen
 import com.gpgapp.ui.screens.KeyDetailScreen
 import com.gpgapp.ui.screens.KeyListScreen
+import com.gpgapp.ui.screens.SignScreen
+import com.gpgapp.ui.screens.VerifyScreen
 import com.gpgapp.ui.theme.GPGAppTheme
 import com.gpgapp.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -37,6 +37,14 @@ import kotlinx.coroutines.flow.collectLatest
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Keep key material, passphrases and decrypted text out of screenshots, screen
+        // recordings and the recents thumbnail.
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+
         setContent {
             GPGAppTheme {
                 GPGApp()
@@ -57,8 +65,13 @@ fun GPGApp() {
     val generateParams by viewModel.generateParams.collectAsState()
     val encryptParams by viewModel.encryptParams.collectAsState()
     val decryptParams by viewModel.decryptParams.collectAsState()
+    val signParams by viewModel.signParams.collectAsState()
+    val verifyParams by viewModel.verifyParams.collectAsState()
     val encryptedResult by viewModel.encryptedResult.collectAsState()
     val decryptedResult by viewModel.decryptedResult.collectAsState()
+    val signedResult by viewModel.signedResult.collectAsState()
+    val verifyResult by viewModel.verifyResult.collectAsState()
+    val exportedKey by viewModel.exportedKey.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.snackbarEvent.collectLatest { event ->
@@ -89,6 +102,12 @@ fun GPGApp() {
                     },
                     onNavigateToDecrypt = {
                         navController.navigate(Screen.Decrypt.route)
+                    },
+                    onNavigateToSign = {
+                        navController.navigate(Screen.Sign.route)
+                    },
+                    onNavigateToVerify = {
+                        navController.navigate(Screen.Verify.route)
                     },
                     publicKeyCount = publicKeys.size,
                     privateKeyCount = secretKeys.size
@@ -121,7 +140,7 @@ fun GPGApp() {
                 if (keyInfo != null) {
                     KeyDetailScreen(
                         keyInfo = keyInfo,
-                        exportedKey = encryptedResult,
+                        exportedKey = exportedKey,
                         onExport = {
                             if (keyInfo.isPrivateKey) {
                                 viewModel.exportPrivateKey(keyId)
@@ -164,6 +183,30 @@ fun GPGApp() {
                     operationState = operationState,
                     onUpdateParams = { viewModel.updateDecryptParams(it) },
                     onDecrypt = { viewModel.decrypt() },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Screen.Sign.route) {
+                SignScreen(
+                    params = signParams,
+                    secretKeys = secretKeys,
+                    signedResult = signedResult,
+                    operationState = operationState,
+                    onUpdateParams = { viewModel.updateSignParams(it) },
+                    onSign = { viewModel.sign() },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Screen.Verify.route) {
+                VerifyScreen(
+                    params = verifyParams,
+                    publicKeys = publicKeys,
+                    verifyResult = verifyResult,
+                    operationState = operationState,
+                    onUpdateParams = { viewModel.updateVerifyParams(it) },
+                    onVerify = { viewModel.verify() },
                     onBack = { navController.popBackStack() }
                 )
             }

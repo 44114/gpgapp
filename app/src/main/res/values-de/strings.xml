@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Verschlüsselung fehlgeschlagen</string>
     <string name="error_decryption_failed">Entschlüsselung fehlgeschlagen</string>
     <string name="error_signing_failed">Signieren fehlgeschlagen</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Signieren</string>
+    <string name="sign_message">Nachricht signieren</string>
+    <string name="message_to_sign">Zu signierende Nachricht</string>
+    <string name="signed_result">Signierte Nachricht</string>
+    <string name="signed_ascii_armored">Signiert (ASCII Armor)</string>
+    <string name="home_action_sign_subtitle">Text mit Ihrem privaten Schlüssel signieren</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Prüfen</string>
+    <string name="verify_signature">Signatur prüfen</string>
+    <string name="message_to_verify">Zu prüfende signierte Nachricht</string>
+    <string name="signature_valid">Signatur ist gültig</string>
+    <string name="signature_invalid">Signatur ist NICHT gültig</string>
+    <string name="home_action_verify_subtitle">Eine signierte Nachricht prüfen</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Prüfung fehlgeschlagen</string>
+    <string name="error_integrity_check_failed">Integritätsprüfung fehlgeschlagen: Die Nachricht wurde verändert oder ist beschädigt</string>
+
 </resources>

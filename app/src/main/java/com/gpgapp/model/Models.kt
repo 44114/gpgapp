@@ -37,6 +37,24 @@ data class DecryptionParams(
     val passphrase: String = ""
 )
 
+data class SignParams(
+    val input: String = "",
+    val selectedKeyId: Long? = null,
+    val passphrase: String = ""
+)
+
+data class VerifyParams(
+    val input: String = "",
+    val selectedKeyId: Long? = null
+)
+
+/** Outcome of verifying a signed message. */
+sealed class VerificationResult {
+    data object Valid : VerificationResult()
+    data object Invalid : VerificationResult()
+    data class Failed(val message: String) : VerificationResult()
+}
+
 sealed class SnackbarEvent {
     data class Show(val message: String) : SnackbarEvent()
 }

@@ -23,6 +23,8 @@ A privacy-focused OpenPGP / GPG toolkit for Android. Generate, manage, import, e
 | Generate Key | Create a new Ed25519 or RSA key pair |
 | Encrypt | Encrypt a message with a public key |
 | Decrypt | Decrypt a message with a private key |
+| Sign | Sign text with a private key |
+| Verify | Verify a signed message with a public key |
 
 ## Requirements
 
@@ -56,6 +58,24 @@ To build a release APK:
 - Private keys are encrypted at rest with AES-256 using your passphrase.
 - Passphrases are never stored; they are required each time you use a private key.
 - The app never requires internet access and makes no network calls.
+- Messages are encrypted with AES-256 and an integrity-protection (MDC) packet. Decryption
+  **verifies** that packet and refuses to return plaintext when the check fails, or when a
+  message carries no integrity protection at all.
+- `FLAG_SECURE` is set on the main window, so key material, passphrases and decrypted text are
+  excluded from screenshots, screen recordings and the recent-apps thumbnail.
+
+## Testing
+
+The OpenPGP layer is covered by host-side tests that exercise the same `PGPManager` the app
+ships. They include an interoperability check against the system `gpg` binary: GnuPG must be
+able to decrypt what the app produces, and the app must decrypt what GnuPG produces, in both
+cases addressing the encryption subkey.
+
+```bash
+./gradlew :app:testDebugUnitTest
+```
+
+The GnuPG interoperability test skips itself automatically when `gpg` is not installed.
 
 ## License
 

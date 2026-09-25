@@ -11,8 +11,8 @@ android {
         applicationId = "com.gpgapp"
         minSdk = 26
         targetSdk = 34
-        versionCode = 100
-        versionName = "1.0.0"
+        versionCode = 101
+        versionName = "1.0.1"
     }
 
     buildTypes {
@@ -29,6 +29,17 @@ android {
         // Disable dependency metadata in APK Signing Block.
         // F-Droid scanner rejects extra signing blocks, so this must be off.
         includeInApk = false
+    }
+
+    packaging {
+        resources {
+            // The Bouncy Castle jars are multi-release: bcprov, bcpg and bcutil each ship an
+            // OSGI manifest under META-INF/versions/9, which collides at packaging time.
+            // Android runs the base classes, so the whole versioned tree is dead weight.
+            excludes += "META-INF/versions/**"
+            excludes += "META-INF/LICENSE*"
+            excludes += "META-INF/NOTICE*"
+        }
     }
 
     compileOptions {
@@ -73,12 +84,17 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    // Bouncy Castle for PGP
-    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
-    implementation("org.bouncycastle:bcpg-jdk18on:1.77")
+    // Bouncy Castle for PGP.
+    // 1.77 is affected by CVE-2026-3505 / GHSA-cj8j-37rh-8475 (unbounded OpenPGP AEAD
+    // chunk size, fixed upstream in 1.84). Keep this at 1.84 or newer.
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+    implementation("org.bouncycastle:bcpg-jdk18on:1.86")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Host-side unit tests for the OpenPGP layer (run with ./gradlew :app:testDebugUnitTest)
+    testImplementation("junit:junit:4.13.2")
 }

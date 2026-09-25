@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">การเข้ารหัสล้มเหลว</string>
     <string name="error_decryption_failed">การถอดรหัสล้มเหลว</string>
     <string name="error_signing_failed">การลงนามล้มเหลว</string>
+
+    <!-- Sign -->
+    <string name="action_sign">ลงนาม</string>
+    <string name="sign_message">ลงนามข้อความ</string>
+    <string name="message_to_sign">ข้อความที่จะลงนาม</string>
+    <string name="signed_result">ข้อความที่ลงนามแล้ว</string>
+    <string name="signed_ascii_armored">ลงนามแล้ว (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">ลงนามข้อความด้วยคีย์ส่วนตัวของคุณ</string>
+
+    <!-- Verify -->
+    <string name="action_verify">ตรวจสอบ</string>
+    <string name="verify_signature">ตรวจสอบลายเซ็น</string>
+    <string name="message_to_verify">ข้อความที่ลงนามแล้วเพื่อตรวจสอบ</string>
+    <string name="signature_valid">ลายเซ็นถูกต้อง</string>
+    <string name="signature_invalid">ลายเซ็นไม่ถูกต้อง</string>
+    <string name="home_action_verify_subtitle">ตรวจสอบข้อความที่ลงนามแล้ว</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">การตรวจสอบล้มเหลว</string>
+    <string name="error_integrity_check_failed">การตรวจสอบความสมบูรณ์ล้มเหลว: ข้อความถูกแก้ไขหรือเสียหาย</string>
+
 </resources>

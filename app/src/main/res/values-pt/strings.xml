@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Falha na criptografia</string>
     <string name="error_decryption_failed">Falha na descriptografia</string>
     <string name="error_signing_failed">Falha na assinatura</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Assinar</string>
+    <string name="sign_message">Assinar mensagem</string>
+    <string name="message_to_sign">Mensagem para assinar</string>
+    <string name="signed_result">Mensagem assinada</string>
+    <string name="signed_ascii_armored">Assinado (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Assine texto com sua chave privada</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Verificar</string>
+    <string name="verify_signature">Verificar assinatura</string>
+    <string name="message_to_verify">Mensagem assinada para verificar</string>
+    <string name="signature_valid">A assinatura é válida</string>
+    <string name="signature_invalid">A assinatura NÃO é válida</string>
+    <string name="home_action_verify_subtitle">Verifique uma mensagem assinada</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Falha na verificação</string>
+    <string name="error_integrity_check_failed">Falha na verificação de integridade: a mensagem foi modificada ou corrompida</string>
+
 </resources>

@@ -1,0 +1,9 @@
+OpenPGP interoperability and integrity fixes.
+
+- Decrypt messages addressed to the encryption subkey (Ed25519/X25519 and RSA), including ciphertext produced by other OpenPGP implementations
+- Encrypt to the dedicated encryption subkey instead of the primary signing key
+- Verify the integrity-protection (MDC) packet and reject modified or unprotected messages
+- Fix encrypted packet framing so generated messages are well formed for GnuPG
+- Add Sign and Verify screens
+- Update Bouncy Castle to 1.86 (CVE-2026-3505)
+- Block screenshots of key material and decrypted text

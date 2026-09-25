@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Cifratura non riuscita</string>
     <string name="error_decryption_failed">Decifratura non riuscita</string>
     <string name="error_signing_failed">Firma non riuscita</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Firma</string>
+    <string name="sign_message">Firma messaggio</string>
+    <string name="message_to_sign">Messaggio da firmare</string>
+    <string name="signed_result">Messaggio firmato</string>
+    <string name="signed_ascii_armored">Firmato (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Firma il testo con la tua chiave privata</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Verifica</string>
+    <string name="verify_signature">Verifica firma</string>
+    <string name="message_to_verify">Messaggio firmato da verificare</string>
+    <string name="signature_valid">La firma è valida</string>
+    <string name="signature_invalid">La firma NON è valida</string>
+    <string name="home_action_verify_subtitle">Controlla un messaggio firmato</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Verifica non riuscita</string>
+    <string name="error_integrity_check_failed">Controllo di integrità non riuscito: il messaggio è stato modificato o corrotto</string>
+
 </resources>

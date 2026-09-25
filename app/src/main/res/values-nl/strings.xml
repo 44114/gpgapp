@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Versleutelen mislukt</string>
     <string name="error_decryption_failed">Ontsleutelen mislukt</string>
     <string name="error_signing_failed">Ondertekenen mislukt</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Ondertekenen</string>
+    <string name="sign_message">Bericht ondertekenen</string>
+    <string name="message_to_sign">Te ondertekenen bericht</string>
+    <string name="signed_result">Ondertekend bericht</string>
+    <string name="signed_ascii_armored">Ondertekend (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Onderteken tekst met uw privésleutel</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Verifiëren</string>
+    <string name="verify_signature">Handtekening verifiëren</string>
+    <string name="message_to_verify">Ondertekend bericht om te verifiëren</string>
+    <string name="signature_valid">Handtekening is geldig</string>
+    <string name="signature_invalid">Handtekening is NIET geldig</string>
+    <string name="home_action_verify_subtitle">Controleer een ondertekend bericht</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Verificatie mislukt</string>
+    <string name="error_integrity_check_failed">Integriteitscontrole mislukt: het bericht is gewijzigd of beschadigd</string>
+
 </resources>

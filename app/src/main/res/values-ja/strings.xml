@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">暗号化に失敗しました</string>
     <string name="error_decryption_failed">復号化に失敗しました</string>
     <string name="error_signing_failed">署名に失敗しました</string>
+
+    <!-- Sign -->
+    <string name="action_sign">署名</string>
+    <string name="sign_message">メッセージに署名</string>
+    <string name="message_to_sign">署名するメッセージ</string>
+    <string name="signed_result">署名済みメッセージ</string>
+    <string name="signed_ascii_armored">署名済み (ASCII Armor)</string>
+    <string name="home_action_sign_subtitle">秘密鍵でテキストに署名します</string>
+
+    <!-- Verify -->
+    <string name="action_verify">検証</string>
+    <string name="verify_signature">署名を検証</string>
+    <string name="message_to_verify">検証する署名済みメッセージ</string>
+    <string name="signature_valid">署名は有効です</string>
+    <string name="signature_invalid">署名は無効です</string>
+    <string name="home_action_verify_subtitle">署名済みメッセージを検証します</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">検証に失敗しました</string>
+    <string name="error_integrity_check_failed">完全性チェックに失敗しました: メッセージが改変または破損しています</string>
+
 </resources>

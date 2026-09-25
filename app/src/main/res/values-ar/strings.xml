@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">فشل التشفير</string>
     <string name="error_decryption_failed">فشل فك التشفير</string>
     <string name="error_signing_failed">فشل التوقيع</string>
+
+    <!-- Sign -->
+    <string name="action_sign">توقيع</string>
+    <string name="sign_message">توقيع رسالة</string>
+    <string name="message_to_sign">الرسالة المراد توقيعها</string>
+    <string name="signed_result">رسالة موقّعة</string>
+    <string name="signed_ascii_armored">موقّعة (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">وقّع النص بمفتاحك الخاص</string>
+
+    <!-- Verify -->
+    <string name="action_verify">تحقق</string>
+    <string name="verify_signature">التحقق من التوقيع</string>
+    <string name="message_to_verify">رسالة موقّعة للتحقق منها</string>
+    <string name="signature_valid">التوقيع صالح</string>
+    <string name="signature_invalid">التوقيع غير صالح</string>
+    <string name="home_action_verify_subtitle">تحقق من رسالة موقّعة</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">فشل التحقق</string>
+    <string name="error_integrity_check_failed">فشل فحص السلامة: تم تعديل الرسالة أو إتلافها</string>
+
 </resources>

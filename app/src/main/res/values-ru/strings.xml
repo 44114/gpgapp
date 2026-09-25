@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Ошибка шифрования</string>
     <string name="error_decryption_failed">Ошибка расшифровки</string>
     <string name="error_signing_failed">Ошибка подписи</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Подписать</string>
+    <string name="sign_message">Подписать сообщение</string>
+    <string name="message_to_sign">Сообщение для подписи</string>
+    <string name="signed_result">Подписанное сообщение</string>
+    <string name="signed_ascii_armored">Подписано (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Подпишите текст своим закрытым ключом</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Проверить</string>
+    <string name="verify_signature">Проверить подпись</string>
+    <string name="message_to_verify">Подписанное сообщение для проверки</string>
+    <string name="signature_valid">Подпись действительна</string>
+    <string name="signature_invalid">Подпись НЕ действительна</string>
+    <string name="home_action_verify_subtitle">Проверьте подписанное сообщение</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Ошибка проверки</string>
+    <string name="error_integrity_check_failed">Проверка целостности не пройдена: сообщение было изменено или повреждено</string>
+
 </resources>

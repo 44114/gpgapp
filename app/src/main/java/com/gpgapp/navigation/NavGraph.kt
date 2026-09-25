@@ -9,4 +9,6 @@ sealed class Screen(val route: String) {
     data object GenerateKey : Screen("generate_key")
     data object Encrypt : Screen("encrypt")
     data object Decrypt : Screen("decrypt")
+    data object Sign : Screen("sign")
+    data object Verify : Screen("verify")
 }

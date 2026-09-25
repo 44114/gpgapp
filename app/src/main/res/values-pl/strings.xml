@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">Szyfrowanie nie powiodło się</string>
     <string name="error_decryption_failed">Odszyfrowanie nie powiodło się</string>
     <string name="error_signing_failed">Podpisywanie nie powiodło się</string>
+
+    <!-- Sign -->
+    <string name="action_sign">Podpisz</string>
+    <string name="sign_message">Podpisz wiadomość</string>
+    <string name="message_to_sign">Wiadomość do podpisania</string>
+    <string name="signed_result">Podpisana wiadomość</string>
+    <string name="signed_ascii_armored">Podpisane (ASCII Armored)</string>
+    <string name="home_action_sign_subtitle">Podpisz tekst swoim kluczem prywatnym</string>
+
+    <!-- Verify -->
+    <string name="action_verify">Zweryfikuj</string>
+    <string name="verify_signature">Zweryfikuj podpis</string>
+    <string name="message_to_verify">Podpisana wiadomość do weryfikacji</string>
+    <string name="signature_valid">Podpis jest prawidłowy</string>
+    <string name="signature_invalid">Podpis NIE jest prawidłowy</string>
+    <string name="home_action_verify_subtitle">Sprawdź podpisaną wiadomość</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">Weryfikacja nie powiodła się</string>
+    <string name="error_integrity_check_failed">Kontrola integralności nie powiodła się: wiadomość została zmieniona lub uszkodzona</string>
+
 </resources>

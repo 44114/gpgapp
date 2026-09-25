@@ -94,4 +94,25 @@
     <string name="error_encryption_failed">加密失败</string>
     <string name="error_decryption_failed">解密失败</string>
     <string name="error_signing_failed">签名失败</string>
+
+    <!-- Sign -->
+    <string name="action_sign">签名</string>
+    <string name="sign_message">签名消息</string>
+    <string name="message_to_sign">待签名消息</string>
+    <string name="signed_result">签名结果</string>
+    <string name="signed_ascii_armored">已签名(ASCII Armor)</string>
+    <string name="home_action_sign_subtitle">使用私钥对文本签名</string>
+
+    <!-- Verify -->
+    <string name="action_verify">验证</string>
+    <string name="verify_signature">验证签名</string>
+    <string name="message_to_verify">待验证的签名消息</string>
+    <string name="signature_valid">签名有效</string>
+    <string name="signature_invalid">签名无效</string>
+    <string name="home_action_verify_subtitle">验证已签名的消息</string>
+
+    <!-- Verification errors -->
+    <string name="error_verification_failed">验证失败</string>
+    <string name="error_integrity_check_failed">完整性校验失败:消息已被修改或损坏</string>
+
 </resources>

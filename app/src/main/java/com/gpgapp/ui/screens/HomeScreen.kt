@@ -17,7 +17,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EnhancedEncryption
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lock
@@ -46,6 +48,8 @@ fun HomeScreen(
     onNavigateToKeyList: () -> Unit,
     onNavigateToEncrypt: () -> Unit,
     onNavigateToDecrypt: () -> Unit,
+    onNavigateToSign: () -> Unit,
+    onNavigateToVerify: () -> Unit,
     publicKeyCount: Int,
     privateKeyCount: Int
 ) {
@@ -85,7 +89,9 @@ fun HomeScreen(
                 onGenerateKey = onNavigateToGenerateKey,
                 onViewKeys = onNavigateToKeyList,
                 onEncrypt = onNavigateToEncrypt,
-                onDecrypt = onNavigateToDecrypt
+                onDecrypt = onNavigateToDecrypt,
+                onSign = onNavigateToSign,
+                onVerify = onNavigateToVerify
             )
         }
     }
@@ -168,7 +174,9 @@ private fun QuickActionGrid(
     onGenerateKey: () -> Unit,
     onViewKeys: () -> Unit,
     onEncrypt: () -> Unit,
-    onDecrypt: () -> Unit
+    onDecrypt: () -> Unit,
+    onSign: () -> Unit,
+    onVerify: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -205,6 +213,24 @@ private fun QuickActionGrid(
                 color = Color(0xFFFF9800),
                 modifier = Modifier.weight(1f),
                 onClick = onDecrypt
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ActionCard(
+                title = stringResource(R.string.action_sign),
+                subtitle = stringResource(R.string.home_action_sign_subtitle),
+                icon = Icons.Default.Edit,
+                color = Color(0xFF00BCD4),
+                modifier = Modifier.weight(1f),
+                onClick = onSign
+            )
+            ActionCard(
+                title = stringResource(R.string.action_verify),
+                subtitle = stringResource(R.string.home_action_verify_subtitle),
+                icon = Icons.Default.CheckCircle,
+                color = Color(0xFF607D8B),
+                modifier = Modifier.weight(1f),
+                onClick = onVerify
             )
         }
     }
