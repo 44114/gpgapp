@@ -11,8 +11,8 @@ android {
         applicationId = "com.gpgapp"
         minSdk = 26
         targetSdk = 34
-        versionCode = 102
-        versionName = "1.0.2"
+        versionCode = 200
+        versionName = "2.0.0"
     }
 
     buildTypes {
