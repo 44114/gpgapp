@@ -5,7 +5,8 @@ A privacy-focused OpenPGP / GPG toolkit for Android. Generate, manage, import, e
 ## Features
 
 - **Key generation** — Create Ed25519 (sign) + X25519 (encrypt) key pairs, or classic RSA keys (2048 / 3072 / 4096-bit), protected by a passphrase.
-- **Key management** — View, delete, import and export ASCII-armored public and private keys.
+- **Key management** — View, delete, import and export public and private keys. Keys can be imported from a file (armored or binary) or pasted as armored text.
+- **Open key files** — `.asc`, `.pgp` and `.gpg` files appear in Android's "Open with" list. Key files go to the import confirmation; encrypted or signed messages open in Decrypt.
 - **Encrypt / Decrypt** — Encrypt text with a recipient's public key and decrypt with your private key.
 - **Sign / Verify** — Sign text with your private key (Ed25519 and RSA supported).
 - **Fully offline** — All operations run on-device; no network access, no servers, no tracking.
@@ -18,7 +19,7 @@ A privacy-focused OpenPGP / GPG toolkit for Android. Generate, manage, import, e
 | Screen | Description |
 | --- | --- |
 | Home | Overview of stored keys and quick actions |
-| My Keys | List, search, import, export and delete keys |
+| My Keys | List, search, import (from a file or pasted), export and delete keys |
 | Key Details | Fingerprint, key ID, type, creation date and armored export |
 | Generate Key | Create a new Ed25519 or RSA key pair |
 | Encrypt | Encrypt a message with a public key |
@@ -63,6 +64,10 @@ To build a release APK:
   message carries no integrity protection at all.
 - `FLAG_SECURE` is set on the main window, so key material, passphrases and decrypted text are
   excluded from screenshots, screen recordings and the recent-apps thumbnail.
+- Files opened from other apps are classified by parsing them, never by their extension, and
+  are capped at 4 MiB before they are read. A key is imported only after the user confirms;
+  when it is a private key, an existing private key with the same key ID is replaced and the
+  user is told so.
 
 ## Testing
 

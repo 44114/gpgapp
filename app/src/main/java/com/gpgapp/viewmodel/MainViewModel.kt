@@ -4,15 +4,19 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gpgapp.R
+import com.gpgapp.intent.OpenedFile
+import com.gpgapp.intent.OpenedFiles
 import com.gpgapp.model.DecryptionParams
 import com.gpgapp.model.EncryptionParams
 import com.gpgapp.model.KeyGenerationParams
 import com.gpgapp.model.KeyInfo
 import com.gpgapp.model.OperationState
+import com.gpgapp.model.PendingImport
 import com.gpgapp.model.SignParams
 import com.gpgapp.model.SnackbarEvent
 import com.gpgapp.model.VerificationResult
 import com.gpgapp.model.VerifyParams
+import com.gpgapp.navigation.IncomingFileTarget
 import com.gpgapp.service.PGPIntegrityException
 import com.gpgapp.service.PGPManager
 import kotlinx.coroutines.Dispatchers
@@ -79,6 +83,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _exportedKey = MutableStateFlow("")
     val exportedKey: StateFlow<String> = _exportedKey.asStateFlow()
 
+    /**
+     * Key read from a file and waiting for the user to confirm the import. Holds key material,
+     * so it is dropped as soon as the import finishes or the app goes to the background.
+     */
+    private val _pendingImport = MutableStateFlow<PendingImport?>(null)
+    val pendingImport: StateFlow<PendingImport?> = _pendingImport.asStateFlow()
+
     init {
         loadKeys()
     }
@@ -99,6 +110,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun getString(id: Int): String = getApplication<Application>().getString(id)
+
+    private fun getString(id: Int, vararg args: Any): String =
+        getApplication<Application>().getString(id, *args)
+
+    private val resources: android.content.res.Resources
+        get() = getApplication<Application>().resources
 
     private suspend fun reportError(message: String) {
         _operationState.value = OperationState.Error(message)
@@ -189,20 +206,121 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Produces the armored form of [keyId] for a "save to file" action.
+     *
+     * Returns the key directly instead of leaving it in [exportedKey], so a save triggered
+     * before an earlier export has landed cannot write the wrong key to the user's file.
+     */
+    suspend fun exportForSave(keyId: Long, includePrivate: Boolean): String {
+        return withContext(Dispatchers.IO) {
+            if (includePrivate) pgpManager.exportPrivateKey(keyId)
+            else pgpManager.exportPublicKey(keyId)
+        }
+    }
+
     fun importKey(armoredKey: String) {
+        importKeyBytes(armoredKey.toByteArray(), sourceName = null)
+    }
+
+    /**
+     * Parks a key file for confirmation before it is written to the key store.
+     *
+     * Only the cheap checks happen here; whether the bytes are actually a key is decided by the
+     * single parse inside [importKeyBytes], so a file is never parsed twice.
+     */
+    fun requestKeyImport(name: String?, data: ByteArray) {
+        if (data.isEmpty()) {
+            viewModelScope.launch {
+                _snackbarEvent.emit(SnackbarEvent.Show(getString(R.string.error_invalid_key_file)))
+            }
+            return
+        }
+        _pendingImport.value = PendingImport(name = name, data = data)
+    }
+
+    fun confirmPendingImport() {
+        val pending = _pendingImport.value ?: return
+        _pendingImport.value = null
+        importKeyBytes(pending.data, pending.name)
+    }
+
+    fun cancelPendingImport() {
+        _pendingImport.value = null
+    }
+
+    private fun importKeyBytes(data: ByteArray, sourceName: String?) {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
             try {
-                withContext(Dispatchers.IO) { pgpManager.importKey(armoredKey) }
+                val result = withContext(Dispatchers.IO) { pgpManager.importKey(data) }
                 loadKeys()
-                reportSuccess(
-                    OperationState.Success(getString(R.string.key_imported_success)),
-                    getString(R.string.key_imported_success)
-                )
+
+                val message = when {
+                    sourceName == null -> getString(R.string.key_imported_success)
+                    !result.containsSecret -> getString(R.string.imported_public_key_only)
+                    else -> getString(R.string.imported_private_key_count)
+                }
+
+                // Say explicitly when a private key replaced one already on the device: that is
+                // the only way opening a file can destroy data the user cares about.
+                val warning = if (result.replacedSecretKeys > 0) {
+                    getString(R.string.notice_replaced_private_key)
+                } else {
+                    null
+                }
+
+                reportSuccess(OperationState.Success(message), message)
+                warning?.let { _snackbarEvent.emit(SnackbarEvent.Show(it)) }
             } catch (e: Exception) {
-                reportError(e.message ?: getString(R.string.error_failed_import_key))
+                reportError(
+                    if (sourceName != null) getString(R.string.error_failed_import_file, sourceName)
+                    else getString(R.string.error_failed_import_key)
+                )
             }
         }
+    }
+
+    /**
+     * Opens a file handed to us by another app (see the `VIEW` intent filters in the manifest)
+     * and routes it to the screen that can use it.
+     *
+     * Key material and message material are told apart by parsing, not by file extension, so
+     * the caller does not have to pre-read the bytes. Returns the destination screen, or null
+     * when the file cannot be used here.
+     */
+    fun openIncomingFile(name: String?, data: ByteArray): IncomingFileTarget? {
+        val displayName = name ?: getString(R.string.default_file_name)
+        val opened = try {
+            OpenedFiles.classify(displayName, data, pgpManager::containsKeyRing)
+        } catch (_: Exception) {
+            null
+        }
+
+        return when (opened) {
+            is OpenedFile.Key -> {
+                _pendingImport.value = PendingImport(opened.name, opened.data)
+                IncomingFileTarget.Keys
+            }
+            is OpenedFile.Message -> {
+                // Replace whatever was in the field rather than appending: the user just told
+                // us which file they want to work on by opening it.
+                val text = opened.data.toString(Charsets.UTF_8)
+                _decryptParams.value = DecryptionParams(input = text)
+                _verifyParams.value = VerifyParams(input = text)
+                _verifyResult.value = null
+                IncomingFileTarget.Decrypt
+            }
+            null -> {
+                reportErrorSync(getString(R.string.error_unsupported_file))
+                null
+            }
+        }
+    }
+
+    private fun reportErrorSync(message: String) {
+        _operationState.value = OperationState.Error(message)
+        viewModelScope.launch { _snackbarEvent.emit(SnackbarEvent.Show(message)) }
     }
 
     fun updateEncryptParams(params: EncryptionParams) {

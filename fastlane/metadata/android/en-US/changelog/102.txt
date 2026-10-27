@@ -1,0 +1,6 @@
+Import and open key files.
+
+- Import keys from a file, armored or binary (e.g. gpg --export-secret-keys --output key.gpg)
+- Open .asc, .pgp and .gpg files directly from any app: keys go to import, messages to Decrypt
+- Ask for confirmation before a file is imported, and warn when a private key replaces one you already have
+- Save exported keys straight to a file instead of the clipboard

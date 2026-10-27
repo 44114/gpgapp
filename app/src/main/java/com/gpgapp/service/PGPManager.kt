@@ -57,6 +57,14 @@ import java.util.Date
  */
 class PGPIntegrityException(message: String) : PGPException(message)
 
+/** Outcome of an import, as far as the user needs to be told about it. */
+data class KeyImportResult(
+    /** The file carried at least one private key ring. */
+    val containsSecret: Boolean,
+    /** Private key rings stored above an existing private key with the same key ID. */
+    val replacedSecretKeys: Int
+)
+
 /**
  * On-device OpenPGP key store and crypto engine.
  *
@@ -283,32 +291,80 @@ class PGPManager(
         savePublicKeyRings(loadPublicKeyRingList().filterNot { ringContainsKey(it, keyId) })
     }
 
-    fun importKey(armoredKey: String) {
-        val input = PGPUtil.getDecoderStream(ByteArrayInputStream(armoredKey.toByteArray()))
-        val factory = JcaPGPObjectFactory(input)
+    /**
+     * Stores every key ring in [keyData] and reports whether any of them was a private key.
+     *
+     * Accepts both forms OpenPGP tooling writes: ASCII-armored text, and the binary packet
+     * streams produced by `gpg --export --output key.gpg`. The whole file is parsed before
+     * anything is written, so a truncated or corrupt file is rejected without half of it
+     * having been imported.
+     *
+     * @throws PGPException when the data holds no OpenPGP key, or cannot be parsed as one.
+     */
+    fun importKey(keyData: ByteArray): KeyImportResult {
+        val secretRings = mutableListOf<PGPSecretKeyRing>()
+        val publicRings = mutableListOf<PGPPublicKeyRing>()
 
-        var obj = factory.nextObject()
-        var imported = false
-
-        while (obj != null) {
-            when (obj) {
-                is PGPSecretKeyRing -> {
-                    upsertSecretKeyRing(obj)
-                    // Keep the public half as well, otherwise the imported private key could
-                    // never be selected as an encryption recipient.
-                    upsertPublicKeyRing(toPublicKeyRing(obj))
-                    imported = true
-                }
-                is PGPPublicKeyRing -> {
-                    upsertPublicKeyRing(obj)
-                    imported = true
+        try {
+            // The object factory flattens collections into their rings and accepts a binary
+            // packet stream directly. It reports unreadable input in two different ways:
+            // not-a-packet data yields no objects at all, while a packet that starts but is
+            // truncated raises an exception.
+            val factory = JcaPGPObjectFactory(PGPUtil.getDecoderStream(ByteArrayInputStream(keyData)))
+            while (true) {
+                when (val obj = factory.nextObject() ?: break) {
+                    is PGPSecretKeyRing -> secretRings.add(obj)
+                    is PGPPublicKeyRing -> publicRings.add(obj)
                 }
             }
-            obj = factory.nextObject()
+        } catch (_: Exception) {
+            throw PGPException("The file is not a valid PGP key")
         }
 
-        if (!imported) {
+        if (secretRings.isEmpty() && publicRings.isEmpty()) {
             throw PGPException("No valid PGP key found in the input")
+        }
+
+        var replaced = 0
+        secretRings.forEach { secretRing ->
+            // A stored secret ring is keyed by primary key ID, so "already present" is exactly
+            // "this import overwrites it". The alternative is the same key arriving as a public
+            // ring only, which is harmless and not worth warning about.
+            if (findSecretKeyRing(secretRing.secretKey.publicKey.keyID) != null) replaced++
+
+            upsertSecretKeyRing(secretRing)
+            // Keep the public half as well, otherwise the imported private key could never be
+            // selected as an encryption recipient.
+            upsertPublicKeyRing(toPublicKeyRing(secretRing))
+        }
+        publicRings.forEach { upsertPublicKeyRing(it) }
+
+        return KeyImportResult(
+            containsSecret = secretRings.isNotEmpty(),
+            replacedSecretKeys = replaced
+        )
+    }
+
+    fun importKey(armoredKey: String) = importKey(armoredKey.toByteArray())
+
+    /**
+     * Whether [keyData] holds at least one OpenPGP key ring, without touching the key store.
+     *
+     * This is what the "open with" dispatch asks before deciding that a file is a key rather
+     * than a message (`.asc` covers both). It parses exactly like [importKey], so a file that
+     * passes here is not rejected later by the import itself.
+     */
+    fun containsKeyRing(keyData: ByteArray): Boolean {
+        return try {
+            val factory = JcaPGPObjectFactory(PGPUtil.getDecoderStream(ByteArrayInputStream(keyData)))
+            var obj = factory.nextObject()
+            while (obj != null) {
+                if (obj is PGPSecretKeyRing || obj is PGPPublicKeyRing) return true
+                obj = factory.nextObject()
+            }
+            false
+        } catch (_: Exception) {
+            false
         }
     }
 

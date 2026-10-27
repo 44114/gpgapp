@@ -12,3 +12,6 @@ sealed class Screen(val route: String) {
     data object Sign : Screen("sign")
     data object Verify : Screen("verify")
 }
+
+/** Where a file opened from another app lands. */
+enum class IncomingFileTarget { Keys, Decrypt }

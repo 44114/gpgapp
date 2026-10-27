@@ -1,6 +1,7 @@
 package com.gpgapp.ui.screens
 
-import androidx.compose.animation.animateContentSize
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,11 +20,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -40,40 +42,72 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gpgapp.R
+import com.gpgapp.intent.FileReader
 import com.gpgapp.model.KeyInfo
+import com.gpgapp.model.PendingImport
 import com.gpgapp.ui.components.EmptyState
 import com.gpgapp.ui.components.GPGButton
 import com.gpgapp.ui.components.GPGOutlinedButton
 import com.gpgapp.ui.components.KeyChip
 import com.gpgapp.ui.components.MonospaceTextField
 import com.gpgapp.ui.components.SectionHeader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KeyListScreen(
     publicKeys: List<KeyInfo>,
     secretKeys: List<KeyInfo>,
+    pendingImport: PendingImport?,
     onKeyClick: (KeyInfo) -> Unit,
     onDeleteKey: (Long) -> Unit,
     onExportPublic: (Long) -> Unit,
     onExportPrivate: (Long) -> Unit,
     onImportKey: (String) -> Unit,
+    onFileSelected: (String, ByteArray) -> Unit,
+    onConfirmImport: () -> Unit,
+    onCancelImport: () -> Unit,
+    onSaveKey: (KeyInfo) -> Unit,
     onBack: () -> Unit
 ) {
     var showImportDialog by remember { mutableStateOf(false) }
     var importText by remember { mutableStateOf("") }
     var keyToDelete by remember { mutableStateOf<KeyInfo?>(null) }
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // Keys arrive as armored text or as a binary export (gpg --output), and providers disagree
+    // about MIME types, so the picker accepts anything and the bytes are classified afterwards
+    // (issue #2). The file is read here because the URI grant may not outlive this callback.
+    val pickKeyFile = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val picked = withContext(Dispatchers.IO) {
+                runCatching { FileReader.read(context, uri) }.getOrNull()
+            }
+            if (picked != null) {
+                onFileSelected(picked.name, picked.data)
+                showImportDialog = false
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -86,8 +120,17 @@ fun KeyListScreen(
                 }
             },
             actions = {
+                IconButton(onClick = { pickKeyFile.launch(arrayOf("*/*")) }) {
+                    Icon(
+                        Icons.Default.FileUpload,
+                        stringResource(R.string.import_key_from_file)
+                    )
+                }
                 IconButton(onClick = { showImportDialog = true }) {
-                    Icon(Icons.Default.FileUpload, stringResource(R.string.import_key))
+                    Icon(
+                        Icons.Default.Description,
+                        stringResource(R.string.import_key)
+                    )
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -117,7 +160,8 @@ fun KeyListScreen(
                             keyInfo = key,
                             onCardClick = { onKeyClick(key) },
                             onDelete = { keyToDelete = key },
-                            onExport = { onExportPrivate(key.keyId) }
+                            onExport = { onExportPrivate(key.keyId) },
+                            onSave = { onSaveKey(key) }
                         )
                     }
                 }
@@ -130,7 +174,8 @@ fun KeyListScreen(
                             keyInfo = key,
                             onCardClick = { onKeyClick(key) },
                             onDelete = { keyToDelete = key },
-                            onExport = { onExportPublic(key.keyId) }
+                            onExport = { onExportPublic(key.keyId) },
+                            onSave = { onSaveKey(key) }
                         )
                     }
                 }
@@ -151,6 +196,19 @@ fun KeyListScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(Modifier.height(12.dp))
+                    GPGOutlinedButton(
+                        text = stringResource(R.string.choose_key_file),
+                        onClick = { pickKeyFile.launch(arrayOf("*/*")) },
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = Icons.Default.FileUpload
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        stringResource(R.string.import_key_or_paste),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(8.dp))
                     MonospaceTextField(
                         value = importText,
                         onValueChange = { importText = it },
@@ -172,6 +230,46 @@ fun KeyListScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showImportDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    // A file is never imported silently: it may hold a private key that replaces one already
+    // on the device, and opening a file must not be able to do that unannounced (issue #3).
+    pendingImport?.let { pending ->
+        AlertDialog(
+            onDismissRequest = onCancelImport,
+            title = { Text(stringResource(R.string.import_key_confirm_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    pending.name?.let { name ->
+                        Text(
+                            stringResource(R.string.import_key_from_file_named, name),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Text(
+                        stringResource(R.string.import_key_confirm_note),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        stringResource(R.string.import_private_key_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            confirmButton = {
+                GPGButton(
+                    text = stringResource(R.string.action_import),
+                    onClick = onConfirmImport
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = onCancelImport) {
                     Text(stringResource(R.string.cancel))
                 }
             }
@@ -208,7 +306,8 @@ private fun KeyCard(
     keyInfo: KeyInfo,
     onCardClick: () -> Unit,
     onDelete: () -> Unit,
-    onExport: () -> Unit
+    onExport: () -> Unit,
+    onSave: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -276,6 +375,13 @@ private fun KeyCard(
                         Icon(
                             Icons.Default.FileDownload,
                             stringResource(R.string.export),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onSave) {
+                        Icon(
+                            Icons.Default.Save,
+                            stringResource(R.string.save_to_file),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }

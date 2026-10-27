@@ -1,7 +1,7 @@
 GPG Key Manager is a complete OpenPGP / GPG toolkit for Android, designed for everyone who cares about privacy and secure communication. Everything runs entirely on your device — no accounts, no servers, no internet connection required.
 
 EASY KEY MANAGEMENT
-Create strong PGP key pairs in seconds. Choose the modern Ed25519 (sign) + X25519 (encrypt) combination for fast, short and secure keys, or stick with classic RSA keys up to 4096 bits for maximum compatibility. Manage all your keys in one place: list, view, import and export ASCII-armored public and private keys.
+Create strong PGP key pairs in seconds. Choose the modern Ed25519 (sign) + X25519 (encrypt) combination for fast, short and secure keys, or stick with classic RSA keys up to 4096 bits for maximum compatibility. Manage all your keys in one place: list, view, import and export public and private keys. Import a key from a file — armored or the binary form written by GnuPG — or paste it directly, and save an export straight to a file. Open .asc, .pgp and .gpg files from any app: keys go through a confirmation before they are imported, and encrypted messages open in the Decrypt screen.
 
 ENCRYPT AND DECRYPT MESSAGES
 Encrypt any text with a recipient's public key and only they — using their private key — can read it. Decrypt incoming messages with your own private key, protected by your passphrase. Text encryption uses AES-256 with a fresh session key, and each message carries an integrity check.

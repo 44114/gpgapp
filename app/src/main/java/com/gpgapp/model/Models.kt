@@ -58,3 +58,21 @@ sealed class VerificationResult {
 sealed class SnackbarEvent {
     data class Show(val message: String) : SnackbarEvent()
 }
+
+/**
+ * Key material read from a file and awaiting the user's confirmation.
+ *
+ * [name] is the file's display name, used only to frame the confirmation dialog. The bytes
+ * are parsed once, when the import is confirmed, so a file that turns out not to be a key is
+ * reported by that one import attempt.
+ */
+data class PendingImport(
+    val name: String?,
+    val data: ByteArray
+) {
+    // ByteArray needs identity-aware equality for the state flow to behave as a value object.
+    override fun equals(other: Any?): Boolean =
+        this === other || (other is PendingImport && name == other.name && data.contentEquals(other.data))
+
+    override fun hashCode(): Int = name.hashCode() * 31 + data.contentHashCode()
+}

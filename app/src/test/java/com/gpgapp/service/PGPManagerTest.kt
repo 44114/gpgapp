@@ -219,6 +219,178 @@ class PGPManagerTest {
         )
     }
 
+    // ------------------------------------------------------------ file import
+
+    /**
+     * A private key file can be told apart from a public one before anything is written, which
+     * is what lets the UI warn before a private key is imported (issue #2).
+     */
+    @Test
+    fun `containsKeyRing accepts public and private keys but not messages`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val keyId = primaryKeyId()
+
+        assertTrue(manager.containsKeyRing(manager.exportPublicKey(keyId).toByteArray()))
+        assertTrue(manager.containsKeyRing(manager.exportPrivateKey(keyId).toByteArray()))
+        assertTrue(
+            manager.containsKeyRing(
+                (manager.exportPrivateKey(keyId) + manager.exportPublicKey(keyId)).toByteArray()
+            )
+        )
+
+        assertFalse(manager.containsKeyRing("hello, this is a text file".toByteArray()))
+        assertFalse(
+            manager.containsKeyRing(
+                "-----BEGIN PGP MESSAGE-----\n\nhQEMAw==\n-----END PGP MESSAGE-----".toByteArray()
+            ),
+            // A truncated armored message is unreadable, so it must not be offered as a key.
+        )
+        assertFalse(manager.containsKeyRing(ByteArray(0)))
+    }
+
+    @Test
+    fun `containsKeyRing does not modify the key store`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val secretBefore = manager.loadSecretKeys()
+        val publicBefore = manager.loadKeys()
+
+        assertTrue(manager.containsKeyRing(manager.exportPrivateKey(primaryKeyId()).toByteArray()))
+
+        assertEquals(secretBefore, manager.loadSecretKeys())
+        assertEquals(publicBefore, manager.loadKeys())
+    }
+
+    /** The same holds for a store that is empty: probing must not create anything. */
+    @Test
+    fun `containsKeyRing leaves an empty store empty`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val keyFile = manager.exportPrivateKey(primaryKeyId()).toByteArray()
+
+        val empty = PGPManager(tempDir("pgp-test-probe"), "Unknown")
+        assertTrue(empty.containsKeyRing(keyFile))
+
+        assertTrue(empty.loadKeys().isEmpty())
+        assertTrue(empty.loadSecretKeys().isEmpty())
+    }
+
+    @Test
+    fun `importing over an existing private key is reported`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val privateKey = manager.exportPrivateKey(primaryKeyId())
+
+        val fresh = PGPManager(tempDir("pgp-test-fresh"), "Unknown")
+        assertEquals(0, fresh.importKey(privateKey).replacedSecretKeys)
+
+        val existing = PGPManager(tempDir("pgp-test-existing"), "Unknown")
+        existing.importKey(privateKey)
+        val second = existing.importKey(privateKey)
+        assertEquals(1, second.replacedSecretKeys)
+        assertTrue(second.containsSecret)
+    }
+
+    /**
+     * `gpg --export-secret-keys --output key.gpg` writes a binary packet stream, which the old
+     * string-based import path could not read at all (issue #2).
+     */
+    @Test
+    fun `binary key export is imported`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val keyId = primaryKeyId()
+
+        val armored = manager.exportPrivateKey(keyId).toByteArray()
+        val binary = PGPUtil.getDecoderStream(ByteArrayInputStream(armored)).readBytes()
+        assertFalse("the binary form must differ from the armored one", binary.contentEquals(armored))
+        assertTrue(manager.containsKeyRing(binary))
+
+        val other = PGPManager(tempDir("pgp-test-binary"), "Unknown")
+        assertTrue(other.importKey(binary).containsSecret)
+
+        assertTrue(
+            "a binary secret key ring must be importable (issue #2)",
+            other.loadSecretKeys().any { it.keyId == keyId }
+        )
+
+        // And the imported key is a working private key, not just a listed entry.
+        val message = "decrypt me with the imported key"
+        val ciphertext = manager.encrypt(message.toByteArray(), keyId)
+        assertEquals(message, String(other.decrypt(ciphertext, keyId, passphrase)))
+    }
+
+    /** Binary *public* key exports are just as common, and must import the same way. */
+    @Test
+    fun `binary public key export is imported`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val keyId = primaryKeyId()
+        val binary = PGPUtil.getDecoderStream(
+            ByteArrayInputStream(manager.exportPublicKey(keyId).toByteArray())
+        ).readBytes()
+
+        val other = PGPManager(tempDir("pgp-test-binary-pub"), "Unknown")
+        assertFalse(other.importKey(binary).containsSecret)
+        assertTrue(other.loadKeys().any { it.keyId == keyId })
+        assertTrue(other.loadSecretKeys().isEmpty())
+    }
+
+    /** A string import must behave exactly like the old `importKey(String)` API it replaces. */
+    @Test
+    fun `string import matches byte import`() {
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val armored = manager.exportPrivateKey(primaryKeyId())
+
+        val fromString = PGPManager(tempDir("pgp-test-str"), "Unknown")
+        fromString.importKey(armored)
+
+        val fromBytes = PGPManager(tempDir("pgp-test-bytes"), "Unknown")
+        fromBytes.importKey(armored.toByteArray())
+
+        assertEquals(
+            fromString.loadSecretKeys().map { it.keyId },
+            fromBytes.loadSecretKeys().map { it.keyId }
+        )
+    }
+
+    @Test
+    fun `importing data without a key fails and stores nothing`() {
+        val failure = runCatching { manager.importKey("not a key".toByteArray()) }
+        assertTrue("import must fail: $failure", failure.isFailure)
+        assertTrue(manager.loadKeys().isEmpty())
+        assertTrue(manager.loadSecretKeys().isEmpty())
+    }
+
+    /** A GnuPG-tooling export is the real-world input; the app must accept it unmodified. */
+    @Test
+    fun `gnupg binary secret key export is imported`() {
+        assumeTrue("gpg not installed, skipping oracle test", gpgAvailable())
+
+        manager.generateKeyRing(userId, passphrase, "Ed25519")
+        val keyId = primaryKeyId()
+
+        val gpgHome = tempDir("gnupg-export")
+        gpgHome.setReadable(true, true)
+        gpgHome.setExecutable(true, true)
+        assertEquals(0, gpg(gpgHome, "--import", input = manager.exportPrivateKey(keyId)).first)
+        // Wait for gpg-agent to accept the passphrase before exporting: the export is the
+        // operation under test, and agent startup races would otherwise make it flaky.
+        unlockAgent(gpgHome)
+
+        val (code, stdout, stderr) = exportSecretKeysWithRetry(gpgHome)
+        assertEquals("gpg --export-secret-keys failed: $stderr", 0, code)
+        assertTrue("gpg must have exported key material", stdout.isNotEmpty())
+        assertTrue(manager.containsKeyRing(stdout))
+
+        val store = PGPManager(tempDir("pgp-test-gpg-export"), "Unknown")
+        assertTrue(store.importKey(stdout).containsSecret)
+        assertTrue(
+            "a key exported by GnuPG must be usable for decryption",
+            store.loadSecretKeys().any { it.keyId == keyId }
+        )
+        val message = "Encrypted before the export"
+        assertEquals(
+            message,
+            String(store.decrypt(manager.encrypt(message.toByteArray(), keyId), keyId, passphrase))
+        )
+    }
+
     // ------------------------------------------------------------ GnuPG oracle
 
     @Test
@@ -481,6 +653,24 @@ class PGPManagerTest {
                 home,
                 "--decrypt", "--pinentry-mode", "loopback", "--passphrase", passphrase,
                 input = ciphertext
+            )
+            if (last.first == 0) return last
+            restartAgent(home, attempt)
+        }
+        return last
+    }
+
+    /**
+     * `gpg --export-secret-keys` unlocks every key through gpg-agent, so it is subject to the
+     * same startup race as the signing and decryption probes above.
+     */
+    private fun exportSecretKeysWithRetry(home: File): Triple<Int, ByteArray, String> {
+        var last: Triple<Int, ByteArray, String> = Triple(1, ByteArray(0), "not attempted")
+        repeat(AGENT_ATTEMPTS) { attempt ->
+            last = gpgBinary(
+                home,
+                "--export-secret-keys", "--pinentry-mode", "loopback", "--passphrase", passphrase,
+                "--local-user", userId
             )
             if (last.first == 0) return last
             restartAgent(home, attempt)

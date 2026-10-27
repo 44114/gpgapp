@@ -13,10 +13,77 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.GPGApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--
+              .asc is also what GnuPG writes for ciphertext and detached signatures, so this
+              filter has to cover three cases, because a file appears in "Open with" only if
+              BOTH its type and its name match an intent filter:
+
+              1. The provider knows the OpenPGP MIME type (Mail attachments and Android's own
+                 MimeTypeMap do; Android maps .pgp to application/pgp-signature).
+              2. The provider reports octet-stream or nothing, which is what most file managers
+                 and Downloads do for .asc. No MIME type can match that, so the whole type
+                 space is claimed and narrowed by name instead. A host is required for
+                 pathPattern/pathSuffix to be applied at all.
+              3. The data scheme serves a real file URI and Android resolves its MIME type from
+                 the extension.
+
+              Path and suffix are both present because they test different inputs, and
+              pathPattern needs an escaped dot: in patterns "." is already a wildcard.
+              MainActivity then classifies the bytes, never the extension: OpenPGP keys go to
+              the import confirmation, anything else opens in Decrypt (issue #3).
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="application/pgp-keys" />
+                <data android:mimeType="application/pgp-encrypted" />
+                <data android:mimeType="application/pgp-signature" />
+                <data android:mimeType="application/pgp" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.asc" />
+                <data android:pathPattern=".*\\.ASC" />
+                <data android:pathPattern=".*\\.pgp" />
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\.PGP" />
+                <data android:pathPattern=".*\\.GPG" />
+            </intent-filter>
+
+            <!--
+              Narrow MIME-only filters would be shadowed by the */* filter above, so the
+              extension forms are declared together with the types to also catch names without
+              an extension, e.g. a key downloaded from a keyserver.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="application/pgp-keys" />
+                <data android:mimeType="application/pgp-encrypted" />
+                <data android:mimeType="application/pgp-signature" />
             </intent-filter>
         </activity>
     </application>

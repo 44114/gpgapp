@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.Card
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.gpgapp.R
 import com.gpgapp.model.KeyInfo
 import com.gpgapp.ui.components.GPGButton
+import com.gpgapp.ui.components.GPGOutlinedButton
 import com.gpgapp.ui.components.InfoCard
 import com.gpgapp.ui.components.MonospaceTextField
 import java.text.SimpleDateFormat
@@ -53,6 +55,7 @@ fun KeyDetailScreen(
     keyInfo: KeyInfo,
     exportedKey: String,
     onExport: () -> Unit,
+    onSaveExport: () -> Unit,
     onBack: () -> Unit
 ) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -135,6 +138,17 @@ fun KeyDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 icon = Icons.Default.ContentCopy
             )
+
+            // Export loads the armored key into the field below; saving writes it straight to a
+            // file the user picks, which is the only off-device route that avoids the clipboard.
+            if (exportedKey.isNotEmpty()) {
+                GPGOutlinedButton(
+                    text = stringResource(R.string.save_to_file),
+                    onClick = onSaveExport,
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = Icons.Default.Save
+                )
+            }
         }
     }
 }
